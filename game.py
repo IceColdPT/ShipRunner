@@ -45,6 +45,8 @@ class Player(pygame.sprite.Sprite):
         self.rect.centerx = WIDTH/2
         self.rect.bottom = HEIGHT - 20
         self.xspeed = 0
+
+        self.hull = 100  #HP
     def update(self): 
         self.rect.x += self.xspeed
         if self.rect.x < 0:
@@ -82,21 +84,18 @@ class Monster(pygame.sprite.Sprite):
 
 
 player = Player()
+
+asteroid_sprites = pygame.sprite.Group()
 list_enemies = []
 max_enemies = 10
 for i in range(max_enemies):
-    list_enemies.append(
-        Monster(random.randint(0,screen.get_width() - 30), 50 )
-    )
-
-for i in range(max_enemies):
-    list_enemies.append(
-        Monster(random.randint(0,screen.get_width() - 30), 150 )
-    )
+    ast = Monster(0,0)
+    
+    all_sprites.add(ast)
+    asteroid_sprites.add(ast)
 all_sprites.add(player)
 
-for enemy in list_enemies:
-    all_sprites.add(enemy)
+
 
 running = True
 
@@ -105,8 +104,7 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-        #Aceleraçao = a=dv/dt
-        #vel = dx/dt
+ 
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_a:
         
@@ -115,6 +113,15 @@ while running:
                 player.xspeed = player.xspeed + 3
         else:
             player.xspeed = 0
+    
+    colisions = pygame.sprite.spritecollide(player,asteroid_sprites,False)
+
+    if colisions:
+        print("hit, hp: ",player.hull)
+        player.hull -= random.randint(1,5)
+    if player.hull <= 0:
+        player.kill()
+
     all_sprites.update()
 
 
